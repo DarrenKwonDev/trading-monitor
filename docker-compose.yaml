@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   questdb:
     image: ${QUESTDB_IMAGE:-questdb/questdb:7.4.0}
@@ -11,7 +9,7 @@ services:
       - "9009:9009" # ILP (TCP)
       - "9009:9009/udp" # ILP (UDP)
     volumes:
-      - ./volumes/questdb:/var/lib/questdb
+      - questdb-data:/var/lib/questdb
       - ./server.conf:/var/lib/questdb/conf/server.conf:ro
   grafana:
     image: ${GRAFANA_IMAGE:-grafana/grafana:10.4.3}
@@ -27,5 +25,9 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
-      - ./volumes/grafana:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
+
+volumes:
+  questdb-data:
+  grafana-data:
