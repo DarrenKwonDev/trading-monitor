@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  questdb:
+    image: ${QUESTDB_IMAGE:-questdb/questdb:7.4.0}
+    container_name: questdb
+    restart: unless-stopped
+    ports:
+      - "9000:9000" # Web console
+      - "8812:8812" # Postgres wire protocol (Grafana)
+      - "9009:9009" # ILP (TCP)
+      - "9009:9009/udp" # ILP (UDP)
+    volumes:
+      - ./volumes/questdb:/var/lib/questdb
+      - ./server.conf:/var/lib/questdb/conf/server.conf:ro
+  grafana:
+    image: ${GRAFANA_IMAGE:-grafana/grafana:10.4.3}
+    container_name: grafana
+    restart: unless-stopped
+    depends_on:
+      - questdb
+    ports:
+      - "3000:3000"
+    environment:
+      # Defaults are admin/admin; override via env if you want.
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./volumes/grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro

@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+
+server.conf
+
+# Docker runtime data (QuestDB/Grafana bind mounts)
+volumes/
+
+# OpenCode workspace
+.opencode/
+
+# Logs / temp
+*.log
+logs/
+tmp/
+.cache/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
