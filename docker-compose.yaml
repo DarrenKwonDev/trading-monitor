@@ -1,6 +1,6 @@
 services:
   questdb:
-    image: ${QUESTDB_IMAGE:-questdb/questdb:7.4.0}
+    image: ${QUESTDB_IMAGE:-questdb/questdb:9.3.2}
     container_name: questdb
     restart: unless-stopped
     ports:
@@ -12,7 +12,7 @@ services:
       - questdb-data:/var/lib/questdb
       - ./server.conf:/var/lib/questdb/conf/server.conf:ro
   grafana:
-    image: ${GRAFANA_IMAGE:-grafana/grafana:10.4.3}
+    image: ${GRAFANA_IMAGE:-grafana/grafana:12.4.0-21693836646-ubuntu}
     container_name: grafana
     restart: unless-stopped
     depends_on:
