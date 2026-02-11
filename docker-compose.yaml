@@ -34,6 +34,35 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
 
+  prometheus:
+    image: ${PROMETHEUS_IMAGE:-prom/prometheus:v2.51.2}
+    container_name: prometheus
+    restart: unless-stopped
+    depends_on:
+      - node-exporter
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=3d
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  node-exporter:
+    image: ${NODE_EXPORTER_IMAGE:-prom/node-exporter:v1.8.1}
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+
 volumes:
   questdb-data:
   grafana-data:
+  prometheus-data:
