@@ -3,16 +3,20 @@ services:
     image: ${QUESTDB_IMAGE:-questdb/questdb:9.3.2}
     container_name: questdb
     restart: unless-stopped
+    environment:
+      QDB_METRICS_ENABLED: TRUE
+      QDB_HTTP_HEALTH_CHECK_AUTHENTICATION_REQUIRED: false
     ports:
       - "9000:9000" # Web console
       - "8812:8812" # Postgres wire protocol (Grafana)
+      - "9003:9003"
       - "9009:9009" # ILP (TCP)
       - "9009:9009/udp" # ILP (UDP)
     volumes:
       - questdb-data:/var/lib/questdb
       - ./server.conf:/var/lib/questdb/conf/server.conf:ro
   grafana:
-    image: ${GRAFANA_IMAGE:-grafana/grafana:12.4.0-21693836646-ubuntu}
+    image: ${GRAFANA_IMAGE:-grafana/grafana:12.3-ubuntu}
     container_name: grafana
     restart: unless-stopped
     depends_on:
@@ -24,9 +28,11 @@ services:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARD_MIN_REFRESH_INTERVAL: 1s
     volumes:
       - grafana-data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
 
 volumes:
   questdb-data:
